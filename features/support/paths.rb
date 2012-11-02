@@ -23,6 +23,11 @@ module NavigationHelpers
       begin
         '/movies/same_director/' +  Movie.find_by_title($1).id.to_s
       end
+    when /^the details page for "(.+)"$/ then
+      begin
+        '/movies/' + Movie.find_by_title($1).id.to_s
+      end
+    when /^the New Movie page$/ then '/movies/new'
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

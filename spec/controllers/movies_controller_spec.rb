@@ -3,6 +3,14 @@ require_relative '../../app/controllers/application_controller'
 require_relative '../../app/controllers/movies_controller'
 
 describe MoviesController do
+  describe "GET details of a Movie" do
+    it "assigns the requested movie as @movie" do
+      movie = Movie.create!({ :title => 'Star Wars 2', :director => 'George Lucas' })
+      get :show, {:id => movie.id }
+      assigns(:movie).should eq(movie)
+    end
+  end
+
   describe 'Find Movies With Same Director' do
 
     context 'the movie director is known' do
@@ -16,7 +24,7 @@ describe MoviesController do
         Movie.stub(:find).and_return(@movie);
         get 'same_director', { :id => @movie.id }
       end
-  
+
       it 'should select the Find Movies with Same Director template for rendering' do
         Movie.stub(:find).and_return(@movie);
         @movie.stub(:find_with_same_director).and_return(@fake_results)
@@ -111,15 +119,16 @@ describe MoviesController do
   end
 
   describe 'Find All Movies matching only certain MPAA ratings' do
-    it 'should call the model method that performs Find Movies with ratings and return a list of movies' do
-       @movie = FactoryGirl.build(:movie, :title => 'Star Wars 2', :director => 'George Lucas', :id => 1)
-       get 'index', { 'ratings[PG]'.to_sym => '1' }
+    it 'should keep selected ratings in session and redirect to Find Movies' do
+       @movie = FactoryGirl.build(:movie, :title => 'Star Wars 2', :director => 'George Lucas', :id => 1, :rating => 'PG')
+       get 'index', { :ratings => {'ratings[PG]' => '1'}}
+       response.should redirect_to movies_path(:ratings => {'ratings[PG]' => '1'})
     end    
 
     it 'should keep the selected ratings in the parameters when I order by title and redirect' do
        @movie = FactoryGirl.build(:movie, :title => 'Star Wars 2', :director => 'George Lucas', :id => 1)
-       get 'index', { :ratings => [{'ratings[PG]' => '1'}], :sort => 'title' }
-       response.should redirect_to movies_path(:ratings => [{'ratings[PG]' => '1'}], :sort => 'title')
+       get 'index', { :ratings => {'ratings[PG]' => '1'}, :sort => 'title' }
+       response.should redirect_to movies_path(:ratings => {'ratings[PG]' => '1'}, :sort => 'title')
     end    
     
   end

@@ -6,9 +6,13 @@ Given /the following movies exist/ do |movies_table|
   end
 end
 
-Given /^(?:|I )am on the details page for "(.+)"$/ do |movie_title|
-  movie = Movie.find_by_title! movie_title
-  visit '/movies/' + movie.id.to_s
+#Given /^(?:|I )am on the details page for "(.+)"$/ do |movie_title|
+#  movie = Movie.find_by_title! movie_title
+#  visit '/movies/' + movie.id.to_s
+#end
+
+Given /^(?:|I )am on (.+)$/ do |page_name|
+  visit path_to(page_name)
 end
 
 Then /^(?:|the )director of "(.+)" should be "(.+)"$/ do |movie_title, director|
@@ -29,9 +33,14 @@ end
 # Make sure that one string (regexp) occurs before or after another one
 #   on the same page
 
-Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
+Then /I should see "(.*)" before "(.*)"$/ do |e1, e2|
   #  ensure that that e1 occurs before e2.
   assert page.body.index(e1) < page.body.index(e2)
+end
+
+Then /I should see the text "(.*)"$/ do |text|
+  #  ensure that that e1 occurs before e2.
+  assert page.body.include? text
 end
 
 # Make it easier to express checking or unchecking several boxes at once
