@@ -68,6 +68,14 @@ describe MoviesController do
       get 'new'
       response.should render_template('new')   
     end
+    
+    it 'should save the movie info' do
+      @movie = FactoryGirl.build(:movie, :title => 'Star Wars 2', :director => 'George Lucas', :id => 1)
+      Movie.should_receive(:create!).and_return(@movie)
+      post 'create', { :movie => {:title => 'Planeta Simios', :rating => 'G'} }
+      flash[:notice].should_not be_nil
+      flash[:notice].should include @movie.title
+    end
   end
 
   describe 'Edit Movie should show a form to edit the movie info' do
@@ -81,13 +89,25 @@ describe MoviesController do
       response.should render_template('edit')   
     end
 
-    it 'should save the movie when saving the form' do
+    it 'should save the movie and show its data when saving the form' do
       Movie.stub(:find).and_return(@movie);
       @movie.stub(:update_attributes).and_return(@movie);
-      post 'update',{ :id => 4, :method => :put, :title => 'Planeta Simios' }
+      post 'update',{ :id => 1, :method => :put, :title => 'Planeta Simios' }
       response.should redirect_to movie_path(@movie)
     end
+  end
 
+  describe 'Delete Movie should delete the movie from the list' do
+    before :each do
+      @movie = FactoryGirl.build(:movie, :title => 'Star Wars 2', :director => 'George Lucas', :id => 1)
+    end
+
+    it 'should delete the movie' do
+      @movie.should_receive(:destroy)
+      Movie.stub(:find).and_return(@movie);
+      post 'destroy',{ :id => 1, :method => :delete }
+    end
+    
   end
 
   describe 'Find All Movies matching only certain MPAA ratings' do
