@@ -1,3 +1,5 @@
+require_relative '../../config/routes'
+
 # TL;DR: YOU SHOULD DELETE THIS FILE
 #
 # This file is used by web_steps.rb, which you should also delete
@@ -13,21 +15,21 @@ module NavigationHelpers
   def path_to(page_name)
     case page_name
 
-    when /^the (RottenPotatoes )?home\s?page$/ then '/movies'
-    when /^the movies page$/ then '/movies'
+    when /^the (RottenPotatoes )?home\s?page$/ then movies_path
+    when /^the movies page$/ then movies_path
     when /^the edit page for "(.+)"$/ then
       begin
-        '/movies/' + Movie.find_by_title($1).id.to_s + '/edit'
+        edit_movie_path(Movie.find_by_title($1))
       end
     when /^the Similar Movies page for "(.+)"$/ then
       begin
-        '/movies/same_director/' +  Movie.find_by_title($1).id.to_s
+        same_director_path(Movie.find_by_title($1))
       end
     when /^the details page for "(.+)"$/ then
       begin
-        '/movies/' + Movie.find_by_title($1).id.to_s
+        movie_path(Movie.find_by_title($1))
       end
-    when /^the New Movie page$/ then '/movies/new'
+    when /^the New Movie page$/ then new_movie_path
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
